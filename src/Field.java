@@ -1,31 +1,29 @@
 public class Field {
     Mine[][] mineField;
-    int points = 0;
-    public Field(int row, int column){
+    public Field(int row, int column, double ratio){
         mineField = new Mine[row][column];
-        fieldFiller();
+        fieldFiller(ratio);
+        getMines();
         lookAround();
     }
 
-    public Mine mineGenerator(){
+    public Mine mineGenerator(double ratio){
         double value = Math.random();
-        if(value <= 0.15)
-            return new Mine(/*"\u001B[31m\uD83D\uDD32\u001B[0m"*/"\u001B[31m-\u001B[0m", Mine.Type.Mine, Mine.Aspect.Cover,100);
+        if(value <= ratio)
+            return new Mine(/*"\u001B[31m\uD83D\uDD32\u001B[0m"*/"\u001B[31m-\u001B[0m", Mine.Type.Mine, Mine.Aspect.Mine,100);
         else return new Mine("\u001B[37m\uD83D\uDD32\u001B[0m", Mine.Type.Empty, Mine.Aspect.Cover,0);
     }
 
-    public void fieldFiller(){
+    public void fieldFiller(double ratio){
         for (int i = 0; i < mineField.length; i++) {
             for (int j = 0; j < mineField[i].length; j++) {
-                mineField[i][j] = mineGenerator();
+                mineField[i][j] = mineGenerator(ratio);
             }
         }
     }
 
     public boolean intoFieldController(int i, int j){
-        if((i < mineField.length) && (j < mineField[0].length) && ((i >= 0) && (j >= 0)))
-            return true;
-        return false;
+        return (i < mineField.length) && (j < mineField[0].length) && ((i >= 0) && (j >= 0));
     }
 
     public void lookAround(){
@@ -53,156 +51,162 @@ public class Field {
         }
     }
 
-    public void uncheker(int i, int j){
-        /*for (int k = 0; k < mineField.length; k++) {
-            for (int l = 0; l < mineField[k].length; l++) {
-                if (mineField[i][j].getType() != Mine.Type.Mine) {
-                    if(intoFieldController(i + k, j) && mineField[i + k][j].getValue() == 0)
-                        uncheck(i + k, j);
-                    else break;
-                    if(intoFieldController(i + k, j - l) && mineField[i + k][j - l].getValue() == 0)
-                        uncheck(i + k, j - l);
-                    else break;
-                    if(intoFieldController(i + k, j + l) && mineField[i + k][j + l].getValue() == 0)
-                        uncheck(i + k, j + l);
-                    else break;
-                    if(intoFieldController(i - k, j) && mineField[i - k][j].getValue() == 0)
-                        uncheck(i - k, j);
-                    else break;
-                    if(intoFieldController(i - k, j - l) && mineField[i - k][j - l].getValue() == 0)
-                        uncheck(i - k, j - l);
-                    else break;
-                    if(intoFieldController(i - k, j + l) && mineField[i - k][j + l].getValue() == 0)
-                        uncheck(i - k, j + l);
-                    else break;
-                    if(intoFieldController(i, j - l) && mineField[i][j - l].getValue() == 0)
-                        uncheck(i, j - l);
-                    else break;
-                    if(intoFieldController(i, j + l) && mineField[i][j + l].getValue() == 0)
-                        uncheck(i, j + l);
-                    else break;
-                }
-            }
-        }*/
-        uncheckBottom(i, j);
-        uncheckBottomLeft(i, j);
-        uncheckBottomRight(i, j);
-        uncheckLeft(i, j);
-        uncheckRight(i, j);
-        uncheckUp(i, j);
-        uncheckUpLeft(i, j);
-        uncheckUpRight(i, j);
+    public boolean isMine(int i, int j){
+        return mineField[i][j].getType() == Mine.Type.Mine;
     }
 
-    /*public void uncheck(int i, int j) {
-        if (mineField[i][j].getAspect() == Mine.Aspect.Cover)
-            mineField[i][j].setAspect(Mine.Aspect.Uncover);
-    }*/
+    public void isFlag(){
+        for (int i = 0; i < mineField.length; i++) {
+            for (int j = 0; j < mineField[i].length; j++) {
+                if (mineField[i][j].getType() == Mine.Type.Mine) {
+                    if ((intoFieldController(i + 1, j) && mineField[i + 1][j].getAspect() == Mine.Aspect.Cover) || (intoFieldController(i + 1, j + 1) && mineField[i + 1][j + 1].getAspect() == Mine.Aspect.Cover)
+                            || (intoFieldController(i + 1, j - 1) && mineField[i + 1][j - 1].getAspect() == Mine.Aspect.Cover) || (intoFieldController(i - 1, j) && mineField[i - 1][j].getAspect() == Mine.Aspect.Cover)
+                            || (intoFieldController(i - 1, j + 1) && mineField[i - 1][j + 1].getAspect() == Mine.Aspect.Cover) || (intoFieldController(i - 1, j - 1) && mineField[i - 1][j - 1].getAspect() == Mine.Aspect.Cover)
+                            || (intoFieldController(i, j - 1) && mineField[i][j - 1].getAspect() == Mine.Aspect.Cover) || (intoFieldController(i, j + 1) && mineField[i][j + 1].getAspect() == Mine.Aspect.Cover))
+                        return;
+                    else {
+                        mineField[i][j].setType(Mine.Type.Flag);
+                    }
+                }
+            }
+        }
+    }
+
+    public void uncheker(int i, int j){
+        if (mineField[i][j].getType() != Mine.Type.Mine) {
+            uncheckCurrent(i, j);
+            uncheckBottom(i, j);
+            uncheckBottomLeft(i, j);
+            uncheckBottomRight(i, j);
+            uncheckLeft(i, j);
+            uncheckRight(i, j);
+            uncheckUp(i, j);
+            uncheckUpLeft(i, j);
+            uncheckUpRight(i, j);
+        }
+        isFlag();
+    }
+
+    public void uncheckCurrent(int i, int j) {
+        if (intoFieldController(i, j)){
+            if (mineField[i][j].getValue() == 0 && mineField[i][j].getAspect() == Mine.Aspect.Cover)
+                mineField[i][j].setAspect(Mine.Aspect.Uncover);
+        }
+    }
 
     public void uncheckBottom(int i, int j) {
-        for (int k = 0; k < mineField.length; k++) {
-            if (intoFieldController(i + k, j) && mineField[i][j].getType() != Mine.Type.Mine) {
-                if (mineField[i + k][j].getValue() == 0) {
-                    mineField[i + k][j].setAspect(Mine.Aspect.Uncover);
-                }
-                else break;
+        if (intoFieldController(i + 1, j)) {
+            if (mineField[i + 1][j].getValue() == 0 && mineField[i + 1][j].getAspect() == Mine.Aspect.Cover) {
+                mineField[i + 1][j].setAspect(Mine.Aspect.Uncover);
+                uncheker(i + 1, j);
             }
         }
     }
 
     public void uncheckBottomRight(int i, int j) {
-        for (int k = 0; k < mineField.length; k++) {
-            for (int l = 0; l < mineField[i].length; l++) {
-                if (intoFieldController(i + k, j + l) && mineField[i][j].getType() != Mine.Type.Mine) {
-                    if (mineField[i + k][j + l].getValue() == 0) {
-                        mineField[i + k][j + l].setAspect(Mine.Aspect.Uncover);
-                    } else break;
-                }
+        if (intoFieldController(i + 1, j + 1)) {
+            if (mineField[i + 1][j + 1].getValue() == 0 && mineField[i + 1][j + 1].getAspect() == Mine.Aspect.Cover) {
+                mineField[i + 1][j + 1].setAspect(Mine.Aspect.Uncover);
+                uncheker(i + 1, j + 1);
             }
         }
     }
 
     public void uncheckBottomLeft(int i, int j) {
-        for (int k = 0; k < mineField.length; k++) {
-            for (int l = 0; l < mineField[i].length; l++) {
-                if (intoFieldController(i + k, j - l) && mineField[i][j].getType() != Mine.Type.Mine) {
-                    if (mineField[i + k][j - l].getValue() == 0) {
-                        mineField[i + k][j - l].setAspect(Mine.Aspect.Uncover);
-                    } else break;
-                }
+        if (intoFieldController(i + 1, j - 1)) {
+            if (mineField[i + 1][j - 1].getValue() == 0 && mineField[i + 1][j - 1].getAspect() == Mine.Aspect.Cover) {
+                mineField[i + 1][j - 1].setAspect(Mine.Aspect.Uncover);
+                uncheker(i + 1, j - 1);
             }
         }
     }
 
     public void uncheckUp(int i, int j) {
-        for (int k = 0; k < mineField.length; k++) {
-            if (intoFieldController(i - k, j) && mineField[i][j].getType() != Mine.Type.Mine) {
-                if (mineField[i - k][j].getValue() == 0) {
-                    mineField[i - k][j].setAspect(Mine.Aspect.Uncover);
-                }
-                else break;
+        if (intoFieldController(i - 1, j)) {
+            if (mineField[i - 1][j].getValue() == 0 && mineField[i - 1][j].getAspect() == Mine.Aspect.Cover) {
+                mineField[i - 1][j].setAspect(Mine.Aspect.Uncover);
+                uncheker(i - 1, j);
             }
         }
     }
 
     public void uncheckUpRight(int i, int j) {
-        for (int k = 0; k < mineField.length; k++) {
-            for (int l = 0; l < mineField[i].length; l++) {
-                if (intoFieldController(i - k, j + l) && mineField[i][j].getType() != Mine.Type.Mine) {
-                    if (mineField[i - k][j + l].getValue() == 0) {
-                        mineField[i - k][j + l].setAspect(Mine.Aspect.Uncover);
-                    } else break;
-                }
+        if (intoFieldController(i - 1, j + 1)) {
+            if (mineField[i - 1][j + 1].getValue() == 0 && mineField[i - 1][j + 1].getAspect() == Mine.Aspect.Cover) {
+                mineField[i - 1][j + 1].setAspect(Mine.Aspect.Uncover);
+                uncheker(i - 1, j + 1);
             }
         }
     }
 
     public void uncheckUpLeft(int i, int j) {
-        for (int k = 0; k < mineField.length; k++) {
-            for (int l = 0; l < mineField[i].length; l++) {
-                if (intoFieldController(i - k, j - l) && mineField[i][j].getType() != Mine.Type.Mine) {
-                    if (mineField[i - k][j - l].getValue() == 0) {
-                        mineField[i - k][j - l].setAspect(Mine.Aspect.Uncover);
-                    } else break;
-                }
+        if (intoFieldController(i - 1, j - 1)) {
+            if (mineField[i - 1][j - 1].getValue() == 0 && mineField[i - 1][j - 1].getAspect() == Mine.Aspect.Cover) {
+                mineField[i - 1][j - 1].setAspect(Mine.Aspect.Uncover);
+                uncheker(i - 1, j - 1);
             }
         }
     }
 
     public void uncheckLeft(int i, int j) {
-        for (int k = 0; k < mineField.length; k++) {
-            for (int l = 0; l < mineField[k].length; l++) {
-                if (intoFieldController(i, j - l) && mineField[i][j].getType() != Mine.Type.Mine) {
-                    if (mineField[i][j - l].getValue() == 0) {
-                        mineField[i][j - l].setAspect(Mine.Aspect.Uncover);
-                    } else break;
-                }
+        if (intoFieldController(i, j - 1)) {
+            if (mineField[i][j - 1].getValue() == 0 && mineField[i][j - 1].getAspect() == Mine.Aspect.Cover) {
+                mineField[i][j - 1].setAspect(Mine.Aspect.Uncover);
+                uncheker(i, j - 1);
             }
         }
     }
 
     public void uncheckRight(int i, int j) {
-        for (int k = 0; k < mineField.length; k++) {
-            for (int l = 0; l < mineField[k].length; l++) {
-                if (intoFieldController(i, j + l) && mineField[i][j].getType() != Mine.Type.Mine) {
-                    if (mineField[i][j + l].getValue() == 0) {
-                        mineField[i][j + l].setAspect(Mine.Aspect.Uncover);
-                    } else break;
-                }
+        if (intoFieldController(i, j + 1)) {
+            if (mineField[i][j + 1].getValue() == 0 && mineField[i][j + 1].getAspect() == Mine.Aspect.Cover) {
+                mineField[i][j + 1].setAspect(Mine.Aspect.Uncover);
+                uncheker(i, j + 1);
             }
         }
     }
 
-    public String toString() {
-        String result = "";
-        System.out.println("\n\tA\tB\tC\tD\tE\tF\tG\tH\tI\tL");
-        for (int x = 0; x < this.mineField.length; x++) {
-            result += x + "\t" + "[";
-            for(int y = 0; y < this.mineField[x].length; y++) {
-                result += "[" + mineField[x][y] + "]";
+    public int getMines() {
+        int mines = 0;
+        for (Mine[] value : mineField) {
+            for (Mine mine : value) {
+                if (mine.getType() == Mine.Type.Mine)
+                    mines++;
             }
-            result += "]\n";
         }
-        return result;
+        return mines;
+    }
+
+    public int getPoints() {
+        int points = 0;
+        for (Mine[] mines : mineField) {
+            for (Mine mine : mines) {
+                if (mine.getAspect() == Mine.Aspect.Uncover)
+                    points++;
+            }
+        }
+        return points;
+    }
+
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < mineField.length ; i++) {
+            if(i == 0)
+                result.append("\t");
+            if (i > 9)
+                result.append(" ").append(i);
+            else
+            result.append("  ").append(i);
+            if(i == mineField.length - 1)
+                result.append("\n");
+        }
+        for (int x = 0; x < this.mineField.length; x++) {
+            result.append(x).append("\t").append("[");
+            for(int y = 0; y < this.mineField[x].length; y++) {
+                result.append("[").append(mineField[x][y]).append("]");
+            }
+            result.append("]\n");
+        }
+        return result.toString();
     }
 }

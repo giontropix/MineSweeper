@@ -1,9 +1,9 @@
 public class Mine {
     public enum Type {Mine, Flag, Empty}
     private Type type;
-    public enum Aspect {Cover, Uncover}
+    public enum Aspect {Cover, Uncover, Mine}
     private Aspect aspect;
-    private String emoji;
+    private final String emoji;
     private int value;
 
     public Mine(String emoji, Type type, Aspect aspect, int value) {
@@ -29,14 +29,6 @@ public class Mine {
         this.aspect = aspect;
     }
 
-    public String getEmoji() {
-        return emoji;
-    }
-
-    public void setEmoji(String emoji) {
-        this.emoji = emoji;
-    }
-
     public int getValue() {
         return value;
     }
@@ -46,13 +38,15 @@ public class Mine {
     }
 
     public String toString() {
+        if(getType() == Type.Flag)
+            return "\u001B[31m\uD83C\uDFC1\u001B[0m";
         if (getAspect() == Aspect.Uncover) {
             if (getValue() == 0)
                 return "\u001B[37m\uD83D\uDD32\u001B[0m";
         }
+        if (getType() == Type.Mine && getAspect() == Aspect.Mine)
+            return this.emoji;
         if (getAspect() == Aspect.Cover) { //DA SWITCHARE PER COPRIRE LE CASELLE PRIMA DEL GIOCO
-            if(getType() == Type.Mine)
-                return this.emoji;
             if (getValue() == 1)
                 return "\u001B[34m1\u001B[0m";
             if (getValue() == 2)
