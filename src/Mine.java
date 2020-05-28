@@ -1,7 +1,7 @@
 public class Mine {
     public enum Type {Mine, Flag, Empty}
     private Type type;
-    public enum Aspect {Cover, Uncover, Mine}
+    public enum Aspect {Cover, Uncover}
     private Aspect aspect;
     private final String emoji;
     private int value;
@@ -40,26 +40,30 @@ public class Mine {
     public String toString() {
         if(getType() == Type.Flag)
             return "\u001B[31m\uD83C\uDFC1\u001B[0m";
-        if (getAspect() == Aspect.Uncover) {
-            if (getValue() == 0)
-                return "\u001B[37m\uD83D\uDD32\u001B[0m";
+        if (getType() == Type.Mine) {
+            if (getAspect() == Aspect.Cover)
+                //return "\u001B[37m\uD83D\uDD32\u001B[0m";
+                return "\u001B[31m\uD83D\uDD32\u001B[0m";
+            else return this.emoji;
         }
-        if (getType() == Type.Mine && getAspect() == Aspect.Mine)
-            return this.emoji;
-        if (getAspect() == Aspect.Cover) { //DA SWITCHARE PER COPRIRE LE CASELLE PRIMA DEL GIOCO
-            if (getValue() == 1)
-                return "\u001B[34m1\u001B[0m";
-            if (getValue() == 2)
-                return "\u001B[32m2\u001B[0m";
-            if (getValue() == 3)
-                return "\u001B[31m3\u001B[0m";
-            if (getValue() == 4)
-                return "\u001B[33m4\u001B[0m";
-            if (getValue() == 5)
-                return "\u001B[35m5\u001B[0m";
-            else
-                return "0";
+        if (getType() == Type.Empty) {
+            if(getAspect() == Aspect.Cover) { //DA SWITCHARE PER COPRIRE LE CASELLE PRIMA DEL GIOCO
+                if (getValue() != 0) {
+                    if (getValue() == 1)
+                        return "\u001B[34m1\u001B[0m";
+                    if (getValue() == 2)
+                        return "\u001B[32m2\u001B[0m";
+                    if (getValue() == 3)
+                        return "\u001B[31m3\u001B[0m";
+                    if (getValue() == 4)
+                        return "\u001B[33m4\u001B[0m";
+                    if (getValue() == 5)
+                        return "\u001B[35m5\u001B[0m";
+                }
+                else return " ";
+            }
+            else return "\u001B[37m\uD83D\uDD32\u001B[0m";
         }
-        else return "\u001B[37m\uD83D\uDD32\u001B[0m";
+        return " ";
     }
 }

@@ -37,15 +37,14 @@ public class Main {
             rowChosed = scan.nextInt();
             System.out.println("Inserisci la colonna");
             columnChosed = scan.nextInt();
-            mineField.uncheker(rowChosed, columnChosed);
-            System.out.println(mineField.toString());
-            System.out.println("\nPunteggio: " + mineField.getPoints());
+            mineField.uncover(rowChosed, columnChosed);
             if(mineField.isMine(rowChosed, columnChosed)) {
                 System.out.println("\nBUUMMETEEEEEE!!!!!!!!!!");
-                return;
             }
             if(mineField.getPoints() == ((row*column) - numberOfMines))
                 System.out.println("HAI VINTO!!!");
-        } while(mineField.getPoints() < ((row*column) - numberOfMines));
+            System.out.println(mineField.toString());
+            System.out.println("\nPunteggio: " + mineField.getPoints());
+        } while(mineField.getPoints() < ((row*column) - numberOfMines) && !mineField.isMine(rowChosed, columnChosed));
     }
 }
