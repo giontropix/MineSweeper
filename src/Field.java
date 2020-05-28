@@ -10,7 +10,7 @@ public class Field {
     public Mine mineGenerator(double ratio){
         double value = Math.random();
         if(value <= ratio)
-            return new Mine(/*"\u001B[31m\uD83D\uDD32\u001B[0m"*/"\u001B[31m\uD83D\uDCA3\u001B[0m", Mine.Type.Mine, Mine.Aspect.Cover,100);
+            return new Mine(/*"\u001B[31m\uD83D\uDD32\u001B[0m"*/"\u001B[31m\uD83D\uDCA3\u001B[0m", Mine.Type.Mine, Mine.Aspect.CoveredMine,100);
         else return new Mine("\u001B[37m\uD83D\uDD32\u001B[0m", Mine.Type.Empty, Mine.Aspect.Cover,0);
     }
 
@@ -99,7 +99,6 @@ public class Field {
                 uncoverUpRight(i, j);
             }
         }
-        isFlag();
     }
 
     public void uncoverCurrent(int i, int j) {

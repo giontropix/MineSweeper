@@ -1,7 +1,7 @@
 public class Mine {
     public enum Type {Mine, Flag, Empty}
     private Type type;
-    public enum Aspect {Cover, Uncover}
+    public enum Aspect {Cover, Uncover, CoveredMine}
     private Aspect aspect;
     private final String emoji;
     private int value;
@@ -41,13 +41,13 @@ public class Mine {
         if(getType() == Type.Flag)
             return "\u001B[31m\uD83C\uDFC1\u001B[0m";
         if (getType() == Type.Mine) {
-            if (getAspect() == Aspect.Cover)
+            if (getAspect() == Aspect.CoveredMine)
                 //return "\u001B[37m\uD83D\uDD32\u001B[0m";
                 return "\u001B[31m\uD83D\uDD32\u001B[0m";
             else return this.emoji;
         }
         if (getType() == Type.Empty) {
-            if(getAspect() == Aspect.Cover) { //DA SWITCHARE PER COPRIRE LE CASELLE PRIMA DEL GIOCO
+            if(getAspect() == Aspect.Uncover) { //DA SWITCHARE PER COPRIRE LE CASELLE PRIMA DEL GIOCO
                 if (getValue() != 0) {
                     if (getValue() == 1)
                         return "\u001B[34m1\u001B[0m";

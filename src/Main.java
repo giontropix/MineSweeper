@@ -38,6 +38,7 @@ public class Main {
             System.out.println("Inserisci la colonna");
             columnChosed = scan.nextInt();
             mineField.uncover(rowChosed, columnChosed);
+            mineField.isFlag();
             if(mineField.isMine(rowChosed, columnChosed)) {
                 System.out.println("\nBUUMMETEEEEEE!!!!!!!!!!");
             }
