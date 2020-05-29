@@ -1,7 +1,7 @@
 public class Mine {
     public enum Type {Mine, Flag, Empty}
     private Type type;
-    public enum Aspect {Cover, Uncover, CoveredMine}
+    public enum Aspect {Cover, Uncover, CoveredMine, UncoveredMine}
     private Aspect aspect;
     private final String emoji;
     private int value;
@@ -42,8 +42,8 @@ public class Mine {
             return "\u001B[31m\uD83C\uDFC1\u001B[0m";
         if (getType() == Type.Mine) {
             if (getAspect() == Aspect.CoveredMine)
-                //return "\u001B[37m\uD83D\uDD32\u001B[0m";
-                return "\u001B[31m\uD83D\uDD32\u001B[0m";
+                return "\u001B[37m\uD83D\uDD32\u001B[0m";
+                //return "\u001B[31m\uD83D\uDD32\u001B[0m";
             else return this.emoji;
         }
         if (getType() == Type.Empty) {

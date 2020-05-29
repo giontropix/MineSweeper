@@ -56,7 +56,7 @@ public class Field {
             for (Mine[] mines : mineField) {
                 for (Mine mine : mines) {
                     if (mine.getType() == Mine.Type.Mine)
-                        mine.setAspect(Mine.Aspect.Uncover);
+                        mine.setAspect(Mine.Aspect.UncoveredMine);
                 }
             }
             return true;
